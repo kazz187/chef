@@ -310,7 +310,15 @@ describe Chef::Provider::Mount::Mount do
       it "should use mount -o remount if remount is supported" do
         @new_resource.supports({:remount => true})
         @current_resource.mounted(true)
-        @provider.should_receive(:shell_out!).with("mount -o remount #{@new_resource.mount_point}")
+        @provider.should_receive(:shell_out!).with("mount -o remount,defaults #{@new_resource.mount_point}")
+        @provider.remount_fs
+      end
+
+      it "should use mount -o remount with options if remount is supported" do
+        @new_resource.supports({:remount => true})
+        @current_resource.mounted(true)
+        @new_resource.options("size=500m")
+        @provider.should_receive(:shell_out!).with("mount -o remount,size=500m #{@new_resource.mount_point}")
         @provider.remount_fs
       end
 
